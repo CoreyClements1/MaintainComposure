@@ -75,6 +75,13 @@ public class RightPanelManager : MonoBehaviour
         newCanvasGroup.gameObject.SetActive(true);
         newCanvasGroup.alpha = 0f;
 
+        // If switching to active panel, update character name
+        if (activePanel == 1)
+        {
+            RightEditManager rightEditManager = newCanvasGroup.GetComponent<RightEditManager>();
+            rightEditManager.UpdateCharName(HeaderAndSaveManager.Instance.charNameText.text);
+        }
+
         LeanTween.value(newRect.gameObject, smallSize, bigSize, transitionTime).setEaseOutExpo().setOnUpdate((value) =>
         {
             newRect.sizeDelta = new Vector2(newRect.sizeDelta.x, value);
@@ -111,6 +118,18 @@ public class RightPanelManager : MonoBehaviour
         SwapToPanel(buttonNum);
 
     } // END OnButtonPress
+
+
+    #endregion
+
+
+    #region LEARN NEW ART
+
+
+    public void OnLearnNewArt()
+    {
+
+    }
 
 
     #endregion

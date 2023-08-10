@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class RightEditManager : MonoBehaviour
     #region VARIABLES
 
 
-
+    [SerializeField] private TMP_InputField charNameField;
 
 
     #endregion
@@ -115,6 +116,32 @@ public class RightEditManager : MonoBehaviour
         SkillsManager.Instance.AddToApp(app, -1);
 
     } // END SubtractFromApplication
+
+
+    #endregion
+
+
+    #region CHAR NAME
+
+
+    // OnCharFieldChange
+    //----------------------------------------//
+    public void OnCharFieldChange()
+    //----------------------------------------//
+    {
+        HeaderAndSaveManager.Instance.ChangeCharName(charNameField.text);
+
+    } // END OnCharFieldChange
+
+
+    // Update character name field to character name
+    //----------------------------------------//
+    public void UpdateCharName(string charName)
+    //----------------------------------------//
+    {
+        charNameField.text = charName;
+
+    } // END UpdateCharName
 
 
     #endregion

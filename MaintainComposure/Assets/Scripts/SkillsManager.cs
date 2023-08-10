@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SkillsManager : MonoBehaviour
@@ -43,15 +44,44 @@ public class SkillsManager : MonoBehaviour
 
     // Sets up skills
     //----------------------------------------//
-    public void SetupSkills()
+    public void SetupSkills(int[] skillScores, int[] appBonuses)
     //----------------------------------------//
     {
-        foreach(Skill skill in skills)
+        for (int i = 0; i < skills.Length; i++)
         {
-            skill.AddToSkillScore(Random.Range(-8, 8));
+            skills[i].skillScore = skillScores[i];
+            skills[i].UpdateText();
+
+            for (int j = 0; j < 4; j++)
+            {
+                skills[i].applications[j].UpdateSkillScore(skillScores[i]);
+                skills[i].applications[j].applicationBonuses = appBonuses[(i * 4) + j];
+                skills[i].applications[j].UpdateText();
+            }
         }
 
     } // END SetupSkills
+
+
+    // Sets up skills from scratch (all 0's)
+    //----------------------------------------//
+    public void SetupSkillsFromScratch()
+    //----------------------------------------//
+    {
+        for (int i = 0; i < skills.Length; i++)
+        {
+            skills[i].skillScore = 0;
+            skills[i].UpdateText();
+
+            for (int j = 0; j < 4; j++)
+            {
+                skills[i].applications[j].UpdateSkillScore(0);
+                skills[i].applications[j].applicationBonuses = 0;
+                skills[i].applications[j].UpdateText();
+            }
+        }
+
+    } // END SetupSkillsFromScratch
 
 
     #endregion

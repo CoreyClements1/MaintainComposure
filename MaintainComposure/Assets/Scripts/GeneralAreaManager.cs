@@ -77,28 +77,56 @@ public class GeneralAreaManager : MonoBehaviour
 
     // Sets up attributes
     //----------------------------------------//
-    public void SetupAttributes()
+    public void SetupAttributes(CharacterData charData)
     //----------------------------------------//
     {
-        maxActs = 1;
+        maxActs = charData.maxActs;
         maxActsField.text = "" + maxActs;
-        currentActs = 1;
+        currentActs = charData.currentActs;
         currentActsField.text = "" + currentActs;
 
-        maxComposure = 8;
+        maxComposure = charData.maxComposure;
         maxComposureText.text = "" + maxComposure;
-        currentComposure = 8;
+        currentComposure = charData.currentComposure;
+        currentComposureField.text = "" + currentComposure;
+        tempComposure = charData.tempComposure;
+        tempComposureField.text = "" + tempComposure;
+
+        composureThreshold = charData.composureThreshold;
+        thresholdText.text = "" + composureThreshold;
+
+        speedBonuses = charData.speedBonuses;
+        int runScore = (Mathf.FloorToInt((charData.skillScores[1] - 10) / 2f) + charData.appBonuses[6]);
+        UpdateSpeedFromRun(runScore);
+
+    } // END SetupAttributes
+
+
+    // Sets up attributes from scratch
+    //----------------------------------------//
+    public void SetupAttributesFromScratch()
+    //----------------------------------------//
+    {
+        maxActs = 0;
+        maxActsField.text = "" + maxActs;
+        currentActs = 0;
+        currentActsField.text = "" + currentActs;
+
+        maxComposure = 0;
+        maxComposureText.text = "" + maxComposure;
+        currentComposure = 0;
         currentComposureField.text = "" + currentComposure;
         tempComposure = 0;
         tempComposureField.text = "" + tempComposure;
 
-        composureThreshold = 10;
+        composureThreshold = 0;
         thresholdText.text = "" + composureThreshold;
 
         speedBonuses = 0;
-        UpdateSpeedFromRun(0);
+        int runScore = -5;
+        UpdateSpeedFromRun(runScore);
 
-    } // END SetupSkills
+    } // END SetupAttributesFromScratch
 
 
     #endregion

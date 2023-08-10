@@ -15,7 +15,8 @@ public class SkillApplication : MonoBehaviour
     public string applicationName;
     [SerializeField] private TMP_Text additionText;
 
-    public int applicationBonuses { get; private set; }
+    [System.NonSerialized]
+    public int applicationBonuses;
     public int applicationModifier { get; private set; }
     private int skillScore;
 
@@ -57,7 +58,7 @@ public class SkillApplication : MonoBehaviour
 
     // Updates text to match numbers
     //----------------------------------------//
-    private void UpdateText()
+    public void UpdateText()
     //----------------------------------------//
     {
         string displayText = "";

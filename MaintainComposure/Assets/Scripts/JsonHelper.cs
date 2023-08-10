@@ -7,6 +7,12 @@ public static class JsonHelper
     // JsonHelper helps convert arrays of stuff to jsons
     // From https://stackoverflow.com/questions/36239705/serialize-and-deserialize-json-and-json-array-in-unity
 
+    //--------------------------------------//
+    //--------------------------------------//
+    // IMPORTANT NOTE: Any class that is put into json MUST be [System.Serializable]
+    //--------------------------------------//
+    //--------------------------------------//
+
 
     #region JSON
 
@@ -45,6 +51,12 @@ public static class JsonHelper
     //--------------------------------------//
     {
         Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
+
+        if (wrapper == null)
+        {
+            return null;
+        }
+
         return wrapper.Items;
 
     } // END FromJson

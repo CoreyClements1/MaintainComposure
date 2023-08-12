@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Art : MonoBehaviour
+public class Art : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 
     // Art manages an art under the arts panel
@@ -20,7 +21,7 @@ public class Art : MonoBehaviour
     [SerializeField] private Image favBg;
     [SerializeField] private Image favCheck;
 
-    private ArtData artData;
+    protected ArtData artData;
 
 
     #endregion
@@ -91,13 +92,16 @@ public class Art : MonoBehaviour
         typeText.text = type;
 
         // Favorite
-        if (artData.favorited)
+        if (favToggle.gameObject.activeSelf)
         {
-            favToggle.isOn = true;
-        }
-        else
-        {
-            favToggle.isOn = false;
+            if (artData.favorited)
+            {
+                favToggle.isOn = true;
+            }
+            else
+            {
+                favToggle.isOn = false;
+            }
         }
 
         // Color
@@ -109,7 +113,19 @@ public class Art : MonoBehaviour
 
         bgImg.color = ArtsManager.artBgColors[(int)artData.artType];
 
+        SetupAdditionalColors();
+
     } // END SetupArt
+
+
+    // Sets up additional colors, if necessary (to be overridden)
+    //----------------------------------------//
+    public virtual void SetupAdditionalColors()
+    //----------------------------------------//
+    {
+
+
+    } // END SetupAdditionalColors
 
 
     #endregion
@@ -126,6 +142,32 @@ public class Art : MonoBehaviour
         artData.favorited = favToggle.isOn;
 
     } // END OnFavToggle
+
+
+    #endregion
+
+
+    #region POINTER ENTER / EXIT
+
+
+    // OnPointerEnter, show tooltip of art
+    //----------------------------------------//
+    public void OnPointerEnter(PointerEventData eventData)
+    //----------------------------------------//
+    {
+        TooltipManager.Instance.ShowTooltip(artData);
+
+    } // END OnPointerEnter
+
+
+    // OnPointerExit, hide tooltip of art
+    //----------------------------------------//
+    public void OnPointerExit(PointerEventData eventData)
+    //----------------------------------------//
+    {
+        TooltipManager.Instance.HideTooltip();
+
+    } // END OnPointerExit
 
 
     #endregion
@@ -152,6 +194,7 @@ public class ArtData
     public bool passive;
     public bool specializationSpecific;
     public bool favorited;
+    public string artTags;
     public string artDescription;
 
 
@@ -162,7 +205,7 @@ public class ArtData
 
 
     // Constructor, takes all elements
-    public ArtData(string _artName, ArtsManager.ArtType _artType, ArtsManager.ArtComplexity _artComplexity, int _actCost, string _artRange, bool _passive, bool _specializationSpecific, bool _favorited, string _artDescription)
+    public ArtData(string _artName, ArtsManager.ArtType _artType, ArtsManager.ArtComplexity _artComplexity, int _actCost, string _artRange, bool _passive, bool _specializationSpecific, bool _favorited, string _tags, string _artDescription)
     {
         artName = _artName;
         artType = _artType;
@@ -172,9 +215,26 @@ public class ArtData
         passive = _passive;
         specializationSpecific = _specializationSpecific;
         favorited = _favorited;
+        artTags = _tags;
         artDescription = _artDescription;
 
     } // END Constructor
+
+
+    // Constructor, copies an art data
+    public ArtData(ArtData dataToCopy)
+    {
+        artName = dataToCopy.artName;
+        artType = dataToCopy.artType;
+        artComplexity = dataToCopy.artComplexity;
+        actCost = dataToCopy.actCost;
+        artRange = dataToCopy.artRange;
+        passive = dataToCopy.passive;
+        specializationSpecific = dataToCopy.specializationSpecific;
+        favorited = dataToCopy.favorited;
+        artTags = dataToCopy.artTags;
+        artDescription = dataToCopy.artDescription;
+    }
 
 
     #endregion

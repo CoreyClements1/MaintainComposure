@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LearnMenuManager : MonoBehaviour
 {
@@ -17,21 +18,31 @@ public class LearnMenuManager : MonoBehaviour
 
     [SerializeField] private CanvasGroup darkener;
     [SerializeField] private RectTransform risingPanel;
-    [SerializeField] private GameObject newArtPanel;
+    [SerializeField] private GameObject learnArtPanel;
+    [SerializeField] private GameObject addItemPanel;
     [SerializeField] private GameObject specializationPanel;
     [SerializeField] private GameObject charSelectPanel;
+    [SerializeField] private GameObject registryPanel;
 
     private readonly float animTime = .2f;
     private bool readyToOpenClose = true;
 
     private bool ableToClose = false;
     [SerializeField] private GameObject xButton;
+    [SerializeField] private Color xButtonColorLight;
+    [SerializeField] private Color xButtonColorDark;
 
     [SerializeField] private CanvasGroup newCharNamePopup;
     [SerializeField] private TMP_InputField newCharNameField;
 
     [SerializeField] private CanvasGroup confirmDeletePopup;
     private int pendingDeleteCharId;
+
+    [SerializeField] private TMP_Dropdown registryTypeDropdown;
+    [SerializeField] private GameObject artRegistryHeader;
+    [SerializeField] private GameObject itemRegistryHeader;
+    [SerializeField] private GameObject specRegistryHeader;
+    public int currentRegistryType { get; private set; } = 0;
 
 
     #endregion
@@ -74,9 +85,15 @@ public class LearnMenuManager : MonoBehaviour
         if (readyToOpenClose)
         {
             // Show panel
-            newArtPanel.SetActive(true);
+            learnArtPanel.SetActive(true);
+            addItemPanel.SetActive(false);
             specializationPanel.SetActive(false);
             charSelectPanel.SetActive(false);
+            registryPanel.SetActive(false);
+
+            xButton.GetComponent<Image>().color = xButtonColorDark;
+
+            ArtsManager.Instance.DisplayLearnable();
 
             StartCoroutine(ShowPanelCoroutine());
         }
@@ -92,9 +109,13 @@ public class LearnMenuManager : MonoBehaviour
         if (readyToOpenClose)
         {
             // Show panel
-            newArtPanel.SetActive(false);
+            learnArtPanel.SetActive(false);
+            addItemPanel.SetActive(false);
             specializationPanel.SetActive(true);
             charSelectPanel.SetActive(false);
+            registryPanel.SetActive(false);
+
+            xButton.GetComponent<Image>().color = xButtonColorDark;
 
             StartCoroutine(ShowPanelCoroutine());
         }
@@ -110,9 +131,61 @@ public class LearnMenuManager : MonoBehaviour
         if (readyToOpenClose)
         {
             // Show panel
-            newArtPanel.SetActive(false);
+            learnArtPanel.SetActive(false);
+            addItemPanel.SetActive(false);
             specializationPanel.SetActive(false);
             charSelectPanel.SetActive(true);
+            registryPanel.SetActive(false);
+
+            xButton.GetComponent<Image>().color = xButtonColorLight;
+
+            StartCoroutine(ShowPanelCoroutine());
+        }
+
+    } // END ShowCharacterSelectPanel
+
+
+    // Shows the registry panel
+    //----------------------------------------//
+    public void ShowRegistryPanel()
+    //----------------------------------------//
+    {
+        if (readyToOpenClose)
+        {
+            // Show panel
+            learnArtPanel.SetActive(false);
+            addItemPanel.SetActive(false);
+            specializationPanel.SetActive(false);
+            charSelectPanel.SetActive(false);
+            registryPanel.SetActive(true);
+
+            xButton.GetComponent<Image>().color = xButtonColorDark;
+
+            ArtsManager.Instance.RegistryInitialDisplay();
+
+            StartCoroutine(ShowPanelCoroutine());
+        }
+
+    } // END ShowCharacterSelectPanel
+
+
+    // Shows the add item panel
+    //----------------------------------------//
+    public void ShowAddItemPanel()
+    //----------------------------------------//
+    {
+        if (readyToOpenClose)
+        {
+            // Show panel
+            learnArtPanel.SetActive(false);
+            addItemPanel.SetActive(true);
+            specializationPanel.SetActive(false);
+            charSelectPanel.SetActive(false);
+            registryPanel.SetActive(false);
+
+            xButton.GetComponent<Image>().color = xButtonColorDark;
+
+            InvItemsManager.Instance.DisplayObtainable();
 
             StartCoroutine(ShowPanelCoroutine());
         }
@@ -322,6 +395,46 @@ public class LearnMenuManager : MonoBehaviour
         StartCoroutine(CloseConfirmDeletePanel());
 
     } // END OnCancelDelete
+
+
+    #endregion
+
+
+    #region REGISTRY SWAP
+
+
+    // Swap to different registry type
+    //----------------------------------------//
+    public void OnSwapRegistryType()
+    //----------------------------------------//
+    {
+        if (registryTypeDropdown.value != currentRegistryType)
+        {
+            currentRegistryType = registryTypeDropdown.value;
+
+            switch(currentRegistryType)
+            {
+                case 0:
+                    artRegistryHeader.SetActive(true);
+                    itemRegistryHeader.SetActive(false);
+                    specRegistryHeader.SetActive(false);
+                    ArtsManager.Instance.OnRegistryValueChange();
+                    break;
+                case 1:
+                    artRegistryHeader.SetActive(false);
+                    itemRegistryHeader.SetActive(true);
+                    specRegistryHeader.SetActive(false);
+                    InvItemsManager.Instance.OnRegistryHeaderValueChange();
+                    break;
+                case 2:
+                    artRegistryHeader.SetActive(false);
+                    itemRegistryHeader.SetActive(false);
+                    specRegistryHeader.SetActive(true);
+                    break;
+            }
+        }
+
+    } // END OnSwapRegistryType
 
 
     #endregion

@@ -160,6 +160,7 @@ public class HeaderAndSaveManager : MonoBehaviour
 
         // Arts
         characterData.artDatas = ArtsManager.Instance.GetArtsAsArr();
+        characterData.itemDatas = InvItemsManager.Instance.GetItemsAsArr();
 
         // Overwrite or add new character to saved characters array
         if (characterDatas == null)
@@ -257,6 +258,7 @@ public class HeaderAndSaveManager : MonoBehaviour
         SkillsManager.Instance.SetupSkills(dataToLoad.skillScores, dataToLoad.appBonuses);
         GeneralAreaManager.Instance.SetupAttributes(dataToLoad);
         ArtsManager.Instance.SetupArts(dataToLoad.artDatas);
+        InvItemsManager.Instance.SetupObtainedItems(dataToLoad.itemDatas);
 
         charNameText.text = dataToLoad.characterName;
 
@@ -350,6 +352,22 @@ public class HeaderAndSaveManager : MonoBehaviour
     #endregion
 
 
+    #region UPDATE
+
+
+    // Updates all to match update files
+    //----------------------------------------//
+    public void UpdateRegistriesFromFiles()
+    //----------------------------------------//
+    {
+        ArtsManager.Instance.ConsolidateUpdateRegistry();
+
+    } // END UpdateRegistriesFromFiles
+
+
+    #endregion
+
+
 } // END HeaderAndSaveManager.cs
 
 
@@ -386,6 +404,7 @@ public class CharacterData
 
     // Arts
     public ArtData[] artDatas;
+    public ItemData[] itemDatas;
 
 
 } // END CharacterData.cs

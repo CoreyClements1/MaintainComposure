@@ -161,6 +161,7 @@ public class LearnMenuManager : MonoBehaviour
 
             xButton.GetComponent<Image>().color = xButtonColorDark;
 
+            registryTypeDropdown.value = 0;
             ArtsManager.Instance.RegistryInitialDisplay();
 
             StartCoroutine(ShowPanelCoroutine());
@@ -430,6 +431,7 @@ public class LearnMenuManager : MonoBehaviour
                     artRegistryHeader.SetActive(false);
                     itemRegistryHeader.SetActive(false);
                     specRegistryHeader.SetActive(true);
+                    SpecializeManager.Instance.OnRegistryHeaderValueChange();
                     break;
             }
         }

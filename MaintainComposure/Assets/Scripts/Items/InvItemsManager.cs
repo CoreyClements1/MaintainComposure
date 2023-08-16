@@ -163,6 +163,37 @@ public class InvItemsManager : MonoBehaviour
     } // END SetupObtainedItems
 
 
+    // Sets up items from scratch (empty)
+    //----------------------------------------//
+    public void SetupItemsFromScratch()
+    //----------------------------------------//
+    {
+        int numTypes = Enum.GetNames(typeof(ItemType)).Length;
+
+        // Clear old arts
+        foreach (Transform child in invContentParent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        obtainedItemDatasAlpha.Clear();
+        obtainedItemDatasByType.Clear();
+
+        // Create new List List
+        for (int i = 0; i < numTypes; i++)
+        {
+            obtainedItemDatasByType.Add(new List<ItemData>());
+        }
+
+        // Display all
+        invTypeDropdown.value = 0;
+        invSortDropdown.value = 0;
+        invPassiveToggle.isOn = true;
+        OnInvValueChange();
+
+    } // END SetupItemsFromScratch
+
+
     #endregion
 
 
@@ -409,9 +440,6 @@ public class InvItemsManager : MonoBehaviour
                 {
                     DisplayAlpha(registryItemDatasAlpha, registryContentParent, registryItemPrefab, true);
                 }
-                break;
-            case 1:
-                // TODO
                 break;
             default:
                 DisplayOfType(registryItemDatasByType, (ItemType)Enum.ToObject(typeof(ItemType), registryTypeDropdown.value - 1), registryContentParent, registryItemPrefab, true);

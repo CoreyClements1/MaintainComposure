@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SkillsManager skillsManager;
     [SerializeField] private ArtsManager artsManager;
     [SerializeField] private InvItemsManager invItemsManager;
+    [SerializeField] private SpecializeManager specializeManager;
     [SerializeField] private HeaderAndSaveManager headerAndSaveManager;
     [SerializeField] private LearnMenuManager learnMenuManager;
     [SerializeField] private TooltipManager tooltipManager;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
         generalAreaManager.SetupSingleton();
         skillsManager.SetupSingleton();
         artsManager.SetupSingleton();
+        specializeManager.SetupSingleton();
 
         invItemsManager.SetupSingleton();
 

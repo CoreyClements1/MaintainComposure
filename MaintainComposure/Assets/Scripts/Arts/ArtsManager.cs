@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using TreeEditor;
 using Unity.VisualScripting;
 using UnityEditor.U2D.Animation;
 using UnityEngine;
@@ -95,6 +96,8 @@ public class ArtsManager : MonoBehaviour
     [SerializeField] private Transform learnableArtsContentParent;
     [SerializeField] private Art learnableArtPrefab;
 
+    private List<string> currentCharLearnedArts = new List<string>();
+
 
     #endregion
 
@@ -126,9 +129,18 @@ public class ArtsManager : MonoBehaviour
 
     // Sets up arts from list of learned arts
     //----------------------------------------//
-    public void SetupArts(ArtData[] learnedArts)
+    public void SetupArts(string[] learnedArtNames)
     //----------------------------------------//
     {
+        if (learnedArtNames == null || learnedArtNames.Length == 0)
+        {
+            currentCharLearnedArts = new List<string>();
+        }
+        else
+        {
+            currentCharLearnedArts = learnedArtNames.ToList<string>();
+        }
+
         int numTypes = Enum.GetNames(typeof(ArtType)).Length;
 
         // Clear old arts
@@ -146,17 +158,19 @@ public class ArtsManager : MonoBehaviour
             learnedArtsByType.Add(new List<ArtData>());
         }
 
-        // Add all datas to respective type
-        foreach (ArtData data in learnedArts)
+        // Add known arts from registry to known arts
+        foreach (ArtData regArt in artRegistryAlphabetical)
         {
-            learnedArtsByType[(int)data.artType].Add(data);
+            if (learnedArtNames.Contains<string>(regArt.artName))
+            {
+                learnedArtsAlphabetical.Add(regArt);
+                learnedArtsByType[(int)regArt.artType].Add(regArt);
+            }
         }
 
-        // Sort respective types
-        SortTypeList();
 
-        // Sort alphabetical list
-        learnedArtsAlphabetical = learnedArts.ToList();
+        // Sort
+        SortTypeList();
         SortAlphaList();
 
         // Display all
@@ -170,6 +184,8 @@ public class ArtsManager : MonoBehaviour
     public void SetupArtsFromScratch()
     //----------------------------------------//
     {
+        currentCharLearnedArts.Clear();
+
         int numTypes = Enum.GetNames(typeof(ArtType)).Length;
 
         // Clear old arts
@@ -373,9 +389,14 @@ public class ArtsManager : MonoBehaviour
             if (artRegistryAlphabetical[i].artName == nameToReplace)
             {
                 artRegistryAlphabetical[i] = replacingData;
+                if (currentCharLearnedArts.Contains(nameToReplace))
+                {
+                    currentCharLearnedArts[currentCharLearnedArts.IndexOf(nameToReplace)] = replacingData.artName;
+                }
                 SaveArtRegistry();
                 LoadArtRegistry();
                 OnRegistryValueChange();
+                SetupArts(currentCharLearnedArts.ToArray());
                 return;
             }
         }
@@ -394,10 +415,15 @@ public class ArtsManager : MonoBehaviour
         {
             if (artRegistryAlphabetical[i].artName == dataToDelete.artName)
             {
+                if (currentCharLearnedArts.Contains(dataToDelete.artName))
+                {
+                    currentCharLearnedArts.RemoveAt(currentCharLearnedArts.IndexOf(dataToDelete.artName));
+                }
                 artRegistryAlphabetical.RemoveAt(i);
                 SaveArtRegistry();
                 LoadArtRegistry();
                 OnRegistryValueChange();
+                SetupArts(currentCharLearnedArts.ToArray());
                 return;
             }
         }
@@ -646,7 +672,7 @@ public class ArtsManager : MonoBehaviour
     public void OnValueChange()
     //----------------------------------------//
     {
-        switch(typeDropdown.value)
+        switch (typeDropdown.value)
         {
             case 0:
                 if (sortDropdown.value == 0)
@@ -677,10 +703,15 @@ public class ArtsManager : MonoBehaviour
 
     // Gets art datas as an array
     //----------------------------------------//
-    public ArtData[] GetArtsAsArr()
+    public string[] GetArtsAsArr()
     //----------------------------------------//
     {
-        return learnedArtsAlphabetical.ToArray();
+        string[] ret = new string[learnedArtsAlphabetical.Count];
+        for (int i = 0; i < learnedArtsAlphabetical.Count; i++)
+        {
+            ret[i] = learnedArtsAlphabetical[i].artName;
+        }
+        return ret;
 
     } // END GetArtsAsArr
 
@@ -696,12 +727,30 @@ public class ArtsManager : MonoBehaviour
     public void LearnArt(ArtData artData)
     //----------------------------------------//
     {
-        learnedArtsAlphabetical.Add(artData);
-        SetupArts(learnedArtsAlphabetical.ToArray());
-
-        if (learnableArtsContentParent.gameObject.activeSelf)
+        if (artData != null)
         {
-            DisplayLearnable();
+            currentCharLearnedArts.Add(artData.artName);
+            SetupArts(currentCharLearnedArts.ToArray());
+
+            if (learnableArtsContentParent.gameObject.activeSelf)
+            {
+                DisplayLearnable();
+            }
+        }
+
+    } // END LearnArt
+
+
+    // Learns art
+    //----------------------------------------//
+    public void LearnArt(string artToLearn)
+    //----------------------------------------//
+    {
+        if (!currentCharLearnedArts.Contains(artToLearn))
+        {
+            currentCharLearnedArts.Add(artToLearn);
+
+            SetupArts(currentCharLearnedArts.ToArray());
         }
 
     } // END LearnArt
@@ -712,8 +761,8 @@ public class ArtsManager : MonoBehaviour
     public void UnlearnArt(ArtData artData)
     //----------------------------------------//
     {
-        learnedArtsAlphabetical.Remove(artData);
-        SetupArts(learnedArtsAlphabetical.ToArray());
+        currentCharLearnedArts.Remove(artData.artName);
+        SetupArts(currentCharLearnedArts.ToArray());
 
         if (learnableArtsContentParent.gameObject.activeSelf)
         {
@@ -744,7 +793,7 @@ public class ArtsManager : MonoBehaviour
         {
             foreach (ArtData data in artDataList)
             {
-                
+
                 Art newArt = GameObject.Instantiate(prefabToSpawn);
                 newArt.SetupArt(data);
                 newArt.transform.SetParent(parentTransform);
@@ -766,7 +815,7 @@ public class ArtsManager : MonoBehaviour
 
         foreach (ArtData data in artDatasToDisplay[(int)typeToDisplay])
         {
-            
+
             Art newArt = GameObject.Instantiate(prefabToSpawn);
             newArt.SetupArt(data);
             newArt.transform.SetParent(parentTransform);
@@ -788,13 +837,35 @@ public class ArtsManager : MonoBehaviour
         // Spawn arts and display
         foreach (ArtData data in artDatasToDisplay)
         {
-            
             Art newArt = GameObject.Instantiate(prefabToSpawn);
             newArt.SetupArt(data);
             newArt.transform.SetParent(parentTransform);
         }
 
     } // END DisplayAllAlphabetical
+
+
+    // Spawns a specific displayed art
+    //----------------------------------------//
+    public void DisplaySpecificArt(string artNameToDisplay, Transform parentTransform)
+    //----------------------------------------//
+    {
+        foreach (Transform child in parentTransform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        foreach (ArtData artData in artRegistryAlphabetical)
+        {
+            if (artData.artName == artNameToDisplay)
+            {
+                Art newArt = GameObject.Instantiate(artPrefab);
+                newArt.SetupArt(artData, true);
+                newArt.transform.SetParent(parentTransform);
+            }
+        }
+
+    } // END DisplaySpecificArt
 
 
     #endregion
@@ -876,17 +947,152 @@ public class ArtsManager : MonoBehaviour
 
 
     // Displays learnable with prerequisites
-    public void DisplayLearnableWithPrereqs(ArtType artType, ArtComplexity artComplexity)
+    //----------------------------------------//
+    public void DisplayLearnableLevelUp(bool sortByType, bool onlyOneType, ArtType artType, bool onlyOneComplexity, ArtComplexity artComplexity, Transform levelUpContentParent, LevelUpHandlerAttribute levelUpHandlerAttribute, LevelUpChooseArt levelUpChooseArtPrefab)
+    //----------------------------------------//
     {
+        List<ArtData> learnableArtsAlpha = new List<ArtData>();
+        List<List<ArtData>> learnableArtsByType = new List<List<ArtData>>();
 
-    }
+        int numTypes = Enum.GetNames(typeof(ArtType)).Length;
+        for (int i = 0; i < numTypes; i++)
+        {
+            learnableArtsByType.Add(new List<ArtData>());
+        }
+
+        // Get learnable arts
+        foreach (ArtData artData in artRegistryAlphabetical)
+        {
+            // If only of one type and type is correct...
+            if (!onlyOneType || artData.artType == artType)
+            {
+                // If only of one complexity type and complexity is correct...
+                if (!onlyOneComplexity || artData.artComplexity == artComplexity)
+                {
+                    // If we don't know the art already...
+                    if (!learnedArtsAlphabetical.Contains(artData))
+                    {
+                        // Add art to learnable list
+                        learnableArtsAlpha.Add(artData);
+                        learnableArtsByType[(int)artData.artType].Add(artData);
+                    }
+                }
+            }
+        }
+
+        // Sort learnable arts
+        learnableArtsAlpha = learnableArtsAlpha.OrderBy(t => t.artName).ToList();
+        for (int i = 0; i < learnableArtsByType.Count; i++)
+        {
+            learnableArtsByType[i] = learnableArtsByType[i].OrderBy(t => t.artName).ToList();
+        }
+
+        // Type sort
+        if (sortByType)
+        {
+            foreach (Transform child in levelUpContentParent)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            // Spawn arts and display
+            foreach (List<ArtData> artDataList in learnableArtsByType)
+            {
+                foreach (ArtData data in artDataList)
+                {
+
+                    LevelUpChooseArt newArt = GameObject.Instantiate(levelUpChooseArtPrefab);
+                    newArt.SetupArt(data);
+                    newArt.SetAttribute(levelUpHandlerAttribute);
+                    newArt.transform.SetParent(levelUpContentParent);
+                }
+            }
+        }
+        // Alpha sort
+        else
+        {
+            foreach (Transform child in levelUpContentParent)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            // Spawn arts and display
+            foreach (ArtData data in learnableArtsAlpha)
+            {
+                LevelUpChooseArt newArt = GameObject.Instantiate(levelUpChooseArtPrefab);
+                newArt.SetupArt(data);
+                newArt.SetAttribute(levelUpHandlerAttribute);
+                newArt.transform.SetParent(levelUpContentParent);
+            }
+        }
+
+    } // END DisplayLearnableLevelUp
 
 
     // Displays learnable from list
-    public void DisplayLearnableFromList(List<ArtData> artDatas)
+    //----------------------------------------//
+    public void DisplayLearnableLevelUpFromList(Transform chooseArtContentParent, LevelUpHandlerAttribute handlerAttribute, LevelUpChooseArt levelUpChooseArtPrefab)
+    //----------------------------------------//
     {
+        List<ArtData> artDatas = new List<ArtData>();
+        List<string> artStrings = handlerAttribute.levelUpAspect.assocString2.Split(", ").ToList();
 
-    }
+        // Get arts
+        foreach (string artString in artStrings)
+        {
+            foreach (ArtData data in artRegistryAlphabetical)
+            {
+                if (data.artName == artString)
+                {
+                    if (!learnedArtsAlphabetical.Contains(data))
+                    {
+                        artDatas.Add(data);
+                    }
+                }
+            }
+        }
+
+        // Sort
+        artDatas = artDatas.OrderBy(t => t.artName).ToList();
+
+        // Display
+        foreach (Transform child in chooseArtContentParent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        // Spawn arts and display
+        foreach (ArtData data in artDatas)
+        {
+            LevelUpChooseArt newArt = GameObject.Instantiate(levelUpChooseArtPrefab);
+            newArt.SetupArt(data);
+            newArt.SetAttribute(handlerAttribute);
+            newArt.transform.SetParent(chooseArtContentParent);
+        }
+
+    } // END DisplayLearnableLevelUpFromList
+
+
+    // Displays learnable from list
+    //----------------------------------------//
+    private void DisplayLearnableFromList(List<ArtData> artDatasToDisplay, Transform levelUpContentParent, LevelUpHandlerAttribute levelUpHandlerAttribute, LevelUpChooseArt levelUpChooseArtPrefab)
+    //----------------------------------------//
+    {
+        foreach (Transform child in levelUpContentParent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        // Spawn arts and display
+        foreach (ArtData data in artDatasToDisplay)
+        {
+            LevelUpChooseArt newArt = GameObject.Instantiate(levelUpChooseArtPrefab);
+            newArt.SetupArt(data);
+            newArt.SetAttribute(levelUpHandlerAttribute);
+            newArt.transform.SetParent(levelUpContentParent);
+        }
+
+    } // END DisplayLearnableFromList
 
 
     #endregion

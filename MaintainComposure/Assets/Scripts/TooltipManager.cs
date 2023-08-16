@@ -17,6 +17,7 @@ public class TooltipManager : MonoBehaviour
     public static TooltipManager Instance { get; private set; }
 
     // Art
+    [SerializeField] private RectTransform rectTransform;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text typeText;
     [SerializeField] private TMP_Text nameText;
@@ -28,6 +29,7 @@ public class TooltipManager : MonoBehaviour
     [SerializeField] private Image[] brightImages;
     [SerializeField] private Image[] midImages;
     [SerializeField] private Image[] darkImages;
+    private bool pivotLeft = true;
 
 
     #endregion
@@ -83,6 +85,23 @@ public class TooltipManager : MonoBehaviour
     private void FollowMouse()
     //----------------------------------------//
     {
+        if (Mouse.current.position.ReadValue().x + 500 > Screen.currentResolution.width)
+        {
+            if (pivotLeft)
+            {
+                rectTransform.pivot = new Vector2(1.1f, .5f);
+                pivotLeft = false;
+            }
+        }
+        else
+        {
+            if (!pivotLeft)
+            {
+                rectTransform.pivot = new Vector2(-0.1f, .5f);
+                pivotLeft = true;
+            }
+        }
+
         transform.position = Mouse.current.position.ReadValue();
 
     } // END FollowMouse
@@ -111,7 +130,7 @@ public class TooltipManager : MonoBehaviour
     public void ShowTooltip(ItemData dataToShow)
     //----------------------------------------//
     {
-        // TODO
+        SetupFromData(dataToShow);
 
         canvasGroup.alpha = 1f;
 
@@ -134,7 +153,7 @@ public class TooltipManager : MonoBehaviour
     #region TEXT SETUP
 
 
-    // Sets up the text and colors from art data
+    // Sets up the text and colors from art data (ART VERSION)
     //----------------------------------------//
     private void SetupFromData(ArtData dataToSetup)
     //----------------------------------------//
@@ -172,8 +191,24 @@ public class TooltipManager : MonoBehaviour
             actCostText.text = "Cost: N/A";
         }
 
-        rangeText.text = dataToSetup.artRange;
-        tagsText.text = dataToSetup.artTags;
+        if (dataToSetup.artRange != null && dataToSetup.artRange != "" && dataToSetup.artRange != string.Empty)
+        {
+            rangeText.text = "Range: " + dataToSetup.artRange;
+        }
+        else
+        {
+            rangeText.text = "Range: N/A";
+        }
+
+        if (dataToSetup.artTags != null && dataToSetup.artTags != "" && dataToSetup.artTags != string.Empty)
+        {
+            tagsText.text = "Tags: " + dataToSetup.artTags;
+        }
+        else
+        {
+            tagsText.text = "Tags: N/A";
+        }
+        
         descriptionField.text = dataToSetup.artDescription;
 
         // COLORS
@@ -192,6 +227,79 @@ public class TooltipManager : MonoBehaviour
         foreach (Image img in midImages)
         {
             img.color = ArtsManager.artBgColors[(int)dataToSetup.artType];
+        }
+
+        foreach (Image img in darkImages)
+        {
+            img.color = Color.black;
+        }
+
+    } // END SetupFromData
+
+
+    // Sets up the text and colors from item data (ITEM VERSION)
+    //----------------------------------------//
+    private void SetupFromData(ItemData dataToSetup)
+    //----------------------------------------//
+    {
+        // TEXT
+        string typeTextString = "";
+
+        typeTextString += dataToSetup.itemType.ToString();
+
+        if (dataToSetup.passive)
+        {
+            typeTextString += " (Passive)";
+        }
+
+        typeText.text = typeTextString;
+        nameText.text = dataToSetup.itemName;
+
+        if (dataToSetup.itemType == InvItemsManager.ItemType.Weapon && dataToSetup.actCost > 0)
+        {
+            actCostText.text = "Cost: " + dataToSetup.actCost.ToString() + " Acts";
+        }
+        else
+        {
+            actCostText.text = "Cost: N/A";
+        }
+
+        if (dataToSetup.itemType == InvItemsManager.ItemType.Weapon && dataToSetup.range > 0)
+        {
+            rangeText.text = "Range: " + dataToSetup.range + " meters";
+        }
+        else
+        {
+            rangeText.text = "Range: N/A";
+        }
+
+        if (dataToSetup.itemTags != null && dataToSetup.itemTags != "" && dataToSetup.itemTags != string.Empty)
+        {
+            tagsText.text = "Tags: " + dataToSetup.itemTags;
+        }
+        else
+        {
+            tagsText.text = "Tags: N/A";
+        }
+
+        descriptionField.text = dataToSetup.itemDescription;
+
+        // COLORS
+        typeText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        nameText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        actCostText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        rangeText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        tagsText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        descriptionFieldText.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+
+        foreach (Image img in brightImages)
+        {
+            img.color = InvItemsManager.itemTextColors[(int)dataToSetup.itemType];
+        }
+
+        foreach (Image img in midImages)
+        {
+            img.color = InvItemsManager.itemBgColors[(int)dataToSetup.itemType];
         }
 
         foreach (Image img in darkImages)

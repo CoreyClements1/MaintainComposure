@@ -47,6 +47,9 @@ public class GeneralAreaManager : MonoBehaviour
     // Defiances
     public int currentDefiances { get; private set; }
     public int maxDefiances { get; private set; }
+    private List<DefianceHandler> defianceHandlerList = new List<DefianceHandler>();
+    [SerializeField] private DefianceHandler defianceHandlerPrefab;
+    [SerializeField] private Transform defianceContentParent;
 
 
     #endregion
@@ -98,6 +101,7 @@ public class GeneralAreaManager : MonoBehaviour
         speedBonuses = charData.speedBonuses;
         int runScore = (Mathf.FloorToInt((charData.skillScores[1] - 10) / 2f) + charData.appBonuses[6]);
         UpdateSpeedFromRun(runScore);
+        UpdateDisplayedDefiances();
 
     } // END SetupAttributes
 
@@ -125,6 +129,7 @@ public class GeneralAreaManager : MonoBehaviour
         speedBonuses = 0;
         int runScore = -5;
         UpdateSpeedFromRun(runScore);
+        UpdateDisplayedDefiances();
 
     } // END SetupAttributesFromScratch
 
@@ -421,9 +426,115 @@ public class GeneralAreaManager : MonoBehaviour
     public void AddToDefiances(int numToAdd)
     //----------------------------------------//
     {
-        // TODO
+        maxDefiances += numToAdd;
+        currentDefiances = maxDefiances;
+
+        UpdateDisplayedDefiances();
 
     } // END AddToDefiances
+
+
+    // Adds to current defiances
+    //----------------------------------------//
+    public void AddToCurrentDefiances(int numToAdd)
+    //----------------------------------------//
+    {
+        currentDefiances += numToAdd;
+
+        if (currentDefiances < 0)
+        {
+            currentDefiances = 0;
+        }
+        else if (currentDefiances > maxDefiances)
+        {
+            currentDefiances = maxDefiances;
+        }
+
+        UpdateDisplayedDefiances();
+
+    } // END AddToCurrentDefiances
+
+
+    // Resets defiances to max
+    //----------------------------------------//
+    public void ResetDefiances()
+    //----------------------------------------//
+    {
+        currentDefiances = maxDefiances;
+
+        UpdateDisplayedDefiances();
+
+    } // END ResetDefiances
+
+
+    // Updates displayed defiances to current and max defiances
+    //----------------------------------------//
+    public void UpdateDisplayedDefiances()
+    //----------------------------------------//
+    {
+        // Update number of defiances if not max
+        if (defianceHandlerList.Count != maxDefiances)
+        {
+            defianceHandlerList.Clear();
+
+            foreach (Transform child in defianceContentParent)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+
+            int numCurrentLeft = currentDefiances;
+            for (int i = 0; i < maxDefiances; i++)
+            {
+                DefianceHandler newDefHandler = GameObject.Instantiate(defianceHandlerPrefab);
+                if (numCurrentLeft > 0)
+                {
+                    newDefHandler.defianceToggle.isOn = true;
+                    numCurrentLeft--;
+                }
+                else
+                {
+                    newDefHandler.defianceToggle.isOn = false;
+                }
+                newDefHandler.transform.SetParent(defianceContentParent);
+                defianceHandlerList.Add(newDefHandler);
+            }
+        }
+        else
+        {
+            // Update existing to current
+            int numCurrentLeft = currentDefiances;
+            foreach (DefianceHandler handler in defianceHandlerList)
+            {
+                if (numCurrentLeft > 0)
+                {
+                    handler.defianceToggle.isOn = true;
+                    numCurrentLeft--;
+                }
+                else
+                {
+                    handler.defianceToggle.isOn = false;
+                }
+            }
+        }
+
+    } // END UpdateDisplayedDefiances
+
+
+    // Updates current defiances to displayed
+    //----------------------------------------//
+    public void UpdateDefiancesToDisplayed()
+    //----------------------------------------//
+    {
+        currentDefiances = 0;
+        foreach(DefianceHandler handler in defianceHandlerList)
+        {
+            if (handler.defianceToggle.isOn)
+            {
+                currentDefiances++;
+            }
+        }
+
+    } // END UpdateDefiancesToDisplayed
 
 
     #endregion

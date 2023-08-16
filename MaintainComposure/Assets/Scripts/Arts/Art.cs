@@ -118,6 +118,21 @@ public class Art : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     } // END SetupArt
 
 
+    // Override
+    //----------------------------------------//
+    public void SetupArt(ArtData data, bool disableFavorite)
+    //----------------------------------------//
+    {
+        if (disableFavorite)
+        {
+            favBg.gameObject.SetActive(false);
+        }
+
+        SetupArt(data);
+
+    } // END Override
+
+
     // Sets up additional colors, if necessary (to be overridden)
     //----------------------------------------//
     public virtual void SetupAdditionalColors()

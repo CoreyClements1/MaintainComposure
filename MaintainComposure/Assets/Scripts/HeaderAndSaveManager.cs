@@ -159,8 +159,12 @@ public class HeaderAndSaveManager : MonoBehaviour
         }
 
         // Arts
-        characterData.artDatas = ArtsManager.Instance.GetArtsAsArr();
+        characterData.knownArtDatas = ArtsManager.Instance.GetArtsAsArr();
         characterData.itemDatas = InvItemsManager.Instance.GetItemsAsArr();
+
+        // Specs
+        characterData.knownSpecNames = SpecializeManager.Instance.GetCharSpecs();
+        characterData.specLevels = SpecializeManager.Instance.GetCharSpecLevels();
 
         // Overwrite or add new character to saved characters array
         if (characterDatas == null)
@@ -257,8 +261,9 @@ public class HeaderAndSaveManager : MonoBehaviour
         // Load data
         SkillsManager.Instance.SetupSkills(dataToLoad.skillScores, dataToLoad.appBonuses);
         GeneralAreaManager.Instance.SetupAttributes(dataToLoad);
-        ArtsManager.Instance.SetupArts(dataToLoad.artDatas);
+        ArtsManager.Instance.SetupArts(dataToLoad.knownArtDatas);
         InvItemsManager.Instance.SetupObtainedItems(dataToLoad.itemDatas);
+        SpecializeManager.Instance.SetupCharSpecs(dataToLoad.knownSpecNames, dataToLoad.specLevels);
 
         charNameText.text = dataToLoad.characterName;
 
@@ -282,6 +287,8 @@ public class HeaderAndSaveManager : MonoBehaviour
         SkillsManager.Instance.SetupSkillsFromScratch();
         GeneralAreaManager.Instance.SetupAttributesFromScratch();
         ArtsManager.Instance.SetupArtsFromScratch();
+        InvItemsManager.Instance.SetupItemsFromScratch();
+        SpecializeManager.Instance.SetupCharSpecsFromScratch();
 
         CharacterData characterData = new CharacterData();
 
@@ -322,6 +329,11 @@ public class HeaderAndSaveManager : MonoBehaviour
                 characterDatas = tempList.ToArray();
 
                 SaveCharactersFromDatas();
+
+                if (charIdToDelete == activeCharId)
+                {
+                    LearnMenuManager.Instance.SetAbleToClose(false);
+                }
 
                 return;
             }
@@ -403,8 +415,12 @@ public class CharacterData
     public int[] appBonuses = new int[20];
 
     // Arts
-    public ArtData[] artDatas;
+    public string[] knownArtDatas;
     public ItemData[] itemDatas;
+
+    // Specs
+    public string[] knownSpecNames;
+    public int[] specLevels;
 
 
 } // END CharacterData.cs

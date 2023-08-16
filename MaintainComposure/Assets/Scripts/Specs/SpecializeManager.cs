@@ -662,6 +662,8 @@ public class SpecializationData
     public int starLevel = 0;
     public bool anySpecFollows = true;
     public int numLevels = 5;
+    public int thresholdAfterLevel = 0;
+    public int thresholdNeedToReachLevel = 0;
     public string[] followingSpecs;
     public LevelUpData[] levelUpDatas = null;
 
@@ -674,14 +676,16 @@ public class SpecializationData
 
     // Constructor
     //----------------------------------------//
-    public SpecializationData(string _specName, bool _anySpecFollows, int _numLevels, string[] _followingSpecs, LevelUpData[] _levelUpDatas)
+    public SpecializationData(string _specName, bool _anySpecFollows, int _numLevels, string[] _followingSpecs, int _thresholdAfterLevel, int _thresholdNeedToReachLevel, LevelUpData[] _levelUpDatas)
     //----------------------------------------//
     {
         specName = _specName;
-        anySpecFollows= _anySpecFollows;
+        anySpecFollows = _anySpecFollows;
         numLevels = _numLevels;
         levelUpDatas = _levelUpDatas;
         followingSpecs = _followingSpecs;
+        thresholdAfterLevel = _thresholdAfterLevel;
+        thresholdNeedToReachLevel = _thresholdNeedToReachLevel;
 
     } // END Constructor
 
@@ -696,6 +700,8 @@ public class SpecializationData
         numLevels = 0;
         levelUpDatas = null;
         followingSpecs = null;
+        thresholdAfterLevel = 0;
+        thresholdNeedToReachLevel = 0;
 
     } // END Constructor
 

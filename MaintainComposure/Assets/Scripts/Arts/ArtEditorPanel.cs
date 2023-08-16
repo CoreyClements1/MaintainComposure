@@ -62,7 +62,7 @@ public class ArtEditorPanel : MonoBehaviour
     {
         creatingNew = true;
 
-        editingArtData = new ArtData("New Art", ArtsManager.ArtType.Fundamental, ArtsManager.ArtComplexity.Basic, 1, "0 meters", false, false, false, null, "Art description");
+        editingArtData = new ArtData("New Art", ArtsManager.ArtType.Fundamental, ArtsManager.ArtComplexity.Basic, 0, "N/A", false, false, false, null, "Art description");
 
         SetUiToEditingArtData();
 

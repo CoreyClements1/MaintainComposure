@@ -398,8 +398,8 @@ public class CharacterData
     public int currentActs;
     public int maxActs;
 
-    public int currentComposure;
-    public int maxComposure;
+    public int currentComposure = 4;
+    public int maxComposure = 4;
     public int tempComposure;
 
     public int currentDefiances;

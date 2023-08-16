@@ -543,9 +543,6 @@ public class ArtsManager : MonoBehaviour
                     RegistryDisplayAllAlphabetical();
                 }
                 break;
-            case 1:
-                // TODO
-                break;
             default:
                 RegistryDisplayAllOfType((ArtType)Enum.ToObject(typeof(ArtType), registryTypeDropdown.value - 1));
                 break;

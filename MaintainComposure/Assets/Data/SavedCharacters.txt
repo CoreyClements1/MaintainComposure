@@ -1,1 +1,1 @@
-{"Items":[{"characterId":7,"characterName":"Test Char 4","currentActs":0,"maxActs":0,"currentComposure":0,"maxComposure":0,"tempComposure":0,"currentDefiances":0,"maxDefiances":0,"composureThreshold":0,"speedBonuses":0,"speedMultipliers":1.0,"skillScores":[0,0,0,0,0],"appBonuses":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"knownArtDatas":[],"itemDatas":[],"knownSpecNames":["Fighter"],"specLevels":[0]}]}
+{"Items":[]}

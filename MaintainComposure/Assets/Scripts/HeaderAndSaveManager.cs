@@ -27,6 +27,9 @@ public class HeaderAndSaveManager : MonoBehaviour
 
     private int currentMaxId = 0;
 
+    [SerializeField] private GameObject savedTextPrefab;
+    [SerializeField] private Transform savedTextArea;
+
 
     #endregion
 
@@ -195,6 +198,9 @@ public class HeaderAndSaveManager : MonoBehaviour
 
         // Save as JSON
         FileHelper.SaveAsJsonArray<CharacterData>("SavedCharacters", characterDatas, false);
+
+        Transform newTrans = GameObject.Instantiate(savedTextPrefab, savedTextArea.position, savedTextPrefab.transform.rotation).transform;
+        newTrans.SetParent(savedTextArea);
 
         // Reload char displays
         ClearCharDisplays();
@@ -375,6 +381,22 @@ public class HeaderAndSaveManager : MonoBehaviour
         ArtsManager.Instance.ConsolidateUpdateRegistry();
 
     } // END UpdateRegistriesFromFiles
+
+
+    #endregion
+
+
+    #region EXIT
+
+
+    // On exit button, quit game
+    //----------------------------------------//
+    public void OnExitButton()
+    //----------------------------------------//
+    {
+        Application.Quit();
+
+    } // END OnExitButton
 
 
     #endregion

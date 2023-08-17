@@ -77,7 +77,7 @@ public class AddSpecLevel : MonoBehaviour
     #endregion
 
 
-    #region ADD
+    #region ADD / REMOVE
 
 
     // On button, add new attribute
@@ -98,7 +98,7 @@ public class AddSpecLevel : MonoBehaviour
         AddSpecAttribute newAttribute = GameObject.Instantiate(attributePrefab);
         newAttribute.transform.SetParent(contentParent.transform);
 
-        newAttribute.SetupAttributeFromScratch();
+        newAttribute.SetupAttributeFromScratch(this);
 
         attributes.Add(newAttribute);
 
@@ -115,13 +115,23 @@ public class AddSpecLevel : MonoBehaviour
         AddSpecAttribute newAttribute = GameObject.Instantiate(attributePrefab);
         newAttribute.transform.SetParent(contentParent.transform);
 
-        newAttribute.SetupAttribute(aspectData);
+        newAttribute.SetupAttribute(aspectData, this);
 
         attributes.Add(newAttribute);
 
         FindObjectOfType<NewSpecHandler>().RefreshScroll();
 
     } // END AddAttributeFromData
+
+
+    // Removes attribute from list
+    //----------------------------------------//
+    public void OnRemoveAttribute(AddSpecAttribute attributeToRemove)
+    //----------------------------------------//
+    {
+        attributes.Remove(attributeToRemove);
+
+    } // END OnRemoveAttribute
 
 
     #endregion

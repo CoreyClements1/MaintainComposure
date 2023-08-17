@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using static InvItemsManager;
 
 public class SpecializeManager : MonoBehaviour
@@ -33,6 +34,9 @@ public class SpecializeManager : MonoBehaviour
     // UI
     [SerializeField] private Transform rightPanelSpecContentParent;
     [SerializeField] private SpecDisplayHandler rightPanelSpecPrefab;
+    [SerializeField] private TMP_Text textNextToLevelUp;
+    [SerializeField] private SpecThreshHandler thresholdPrefab;
+    [SerializeField] private Button levelUpButton;
 
     [SerializeField] private Transform registrySpecContentParent;
     [SerializeField] private SpecDisplayHandler registrySpecPrefab;
@@ -488,6 +492,34 @@ public class SpecializeManager : MonoBehaviour
             GameObject.Destroy(child.gameObject);
         }
 
+        levelUpButton.interactable = true;
+        textNextToLevelUp.gameObject.SetActive(false);
+
+        // Disable level up if max level
+        if (playerLevel >= specToDisplay.numLevels)
+        {
+            levelUpButton.interactable = false;
+            textNextToLevelUp.gameObject.SetActive(true);
+            textNextToLevelUp.text = "Cannot level up: Max spec. level reached";
+        }
+
+        // Disable level up if at threshold
+        if ((playerLevel) == specToDisplay.thresholdAfterLevel)
+        {
+            int charLevel = 0;
+            foreach(int level in currentCharSpecLevels)
+            {
+                charLevel += level;
+            }
+
+            if (charLevel < specToDisplay.thresholdNeedToReachLevel)
+            {
+                levelUpButton.interactable = false;
+                textNextToLevelUp.gameObject.SetActive(true);
+                textNextToLevelUp.text = "Cannot level up: Must reach char. level " + specToDisplay.thresholdNeedToReachLevel + " before continuing";
+            }
+        }
+
         // Display if player level is 0
         if (playerObtained && playerLevel == 0)
         {
@@ -505,6 +537,14 @@ public class SpecializeManager : MonoBehaviour
             if (playerObtained && playerLevel == i + 1)
             {
                 GameObject.Instantiate(playerSpecLevelPrefab).transform.SetParent(viewSpecContentParent);
+            }
+
+            // Display threshold if necessary
+            if (i > 0 && specToDisplay.thresholdAfterLevel == i + 1 && playerLevel <= i + 1)
+            {
+                SpecThreshHandler specThreshHandler = GameObject.Instantiate(thresholdPrefab);
+                specThreshHandler.SetLevel(specToDisplay.thresholdNeedToReachLevel);
+                specThreshHandler.transform.SetParent(viewSpecContentParent);
             }
         }
 
@@ -786,6 +826,7 @@ public class LevelUpAspect
         LearnAnyArt, // assocIncNumber: max complexity
         UnlockSpec, // assocIncNumber: spec star rating; assocString: required spec group ("Any" = none)
         Other, // assocString: special command (NOTE: MUST BE HANDLED IN BACKEND)
+        InitialSetup, // N/A; handled in aspect handler
     }
 
     public LevelUpType levelUpType;

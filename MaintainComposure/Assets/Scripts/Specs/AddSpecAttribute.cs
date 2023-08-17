@@ -21,6 +21,7 @@ public class AddSpecAttribute : MonoBehaviour
 
     public LevelUpAspect levelUpAspect { get; private set; }
     private bool holdValUpdates = false;
+    private AddSpecLevel owningLevel;
 
 
     #endregion
@@ -31,7 +32,7 @@ public class AddSpecAttribute : MonoBehaviour
 
     // Sets up attribute from level up aspect
     //----------------------------------------//
-    public void SetupAttribute(LevelUpAspect setupLevelUpAspect)
+    public void SetupAttribute(LevelUpAspect setupLevelUpAspect, AddSpecLevel _owningLevel)
     //----------------------------------------//
     {
         levelUpAspect = setupLevelUpAspect;
@@ -42,12 +43,14 @@ public class AddSpecAttribute : MonoBehaviour
         SetDisplayToData();
         holdValUpdates = false;
 
+        owningLevel = _owningLevel;
+
     } // END SetupAttribute
 
 
     // Sets up attribute from scratch
     //----------------------------------------//
-    public void SetupAttributeFromScratch()
+    public void SetupAttributeFromScratch(AddSpecLevel _owningLevel)
     //----------------------------------------//
     {
         levelUpAspect = new LevelUpAspect(LevelUpAspect.LevelUpType.SkillIncrease);
@@ -57,6 +60,8 @@ public class AddSpecAttribute : MonoBehaviour
         OnAttributeTypeChange(true, true);
         SetDisplayToData();
         holdValUpdates = false;
+
+        owningLevel = _owningLevel;
 
     } // END SetupAttributeFromScratch
 
@@ -130,8 +135,8 @@ public class AddSpecAttribute : MonoBehaviour
                 stringField1.text = levelUpAspect.assocString;
                 break;
             case 8: // Learn art from list
-                stringField1.text = levelUpAspect.assocString;
-                stringField2.text = levelUpAspect.assocString2;
+                stringField2.text = levelUpAspect.assocString;
+                stringField1.text = levelUpAspect.assocString2;
                 break;
             case 9: // Learn art of type
                 dropdown1.value = levelUpAspect.assocIncNumber;
@@ -146,6 +151,9 @@ public class AddSpecAttribute : MonoBehaviour
                 break;
             case 12: // Other
                 stringField1.text = levelUpAspect.assocString;
+                break;
+            case 13: // Initial Setup
+                // N/A
                 break;
         }
 
@@ -168,8 +176,8 @@ public class AddSpecAttribute : MonoBehaviour
                 levelUpAspect.assocString = dropdown1.options[dropdown1.value].text;
                 break;
             case 2: // Max comp inc
-                levelUpAspect.assocIncNumber = dropdown1.value + 1;
-                levelUpAspect.assocDie = (InvItemsManager.DamageDie)Enum.ToObject(typeof(InvItemsManager.DamageDie), dropdown2.value);
+                levelUpAspect.assocIncNumber = dropdown2.value + 1;
+                levelUpAspect.assocDie = (InvItemsManager.DamageDie)Enum.ToObject(typeof(InvItemsManager.DamageDie), dropdown1.value);
                 break;
             case 3: // Speed inc
                 levelUpAspect.assocIncNumber = dropdown1.value + 1;
@@ -187,8 +195,8 @@ public class AddSpecAttribute : MonoBehaviour
                 levelUpAspect.assocString = stringField1.text;
                 break;
             case 8: // Learn art from list
-                levelUpAspect.assocString = stringField1.text;
-                levelUpAspect.assocString2 = stringField2.text;
+                levelUpAspect.assocString = stringField2.text;
+                levelUpAspect.assocString2 = stringField1.text;
                 break;
             case 9: // Learn art of type
                 levelUpAspect.assocIncNumber = dropdown1.value;
@@ -203,6 +211,9 @@ public class AddSpecAttribute : MonoBehaviour
                 break;
             case 12: // Other
                 levelUpAspect.assocString = stringField1.text;
+                break;
+            case 13: // Initial Setup
+                // N/A
                 break;
         }
 
@@ -441,6 +452,13 @@ public class AddSpecAttribute : MonoBehaviour
                 stringField1.text = string.Empty;
 
                 break;
+            case 13: // Initial skill setup
+                dropdown1.gameObject.SetActive(false);
+                dropdown2.gameObject.SetActive(false);
+                stringField1.gameObject.SetActive(false);
+                stringField2.gameObject.SetActive(false);
+
+                break;
         }
 
         if (updateData)
@@ -485,6 +503,7 @@ public class AddSpecAttribute : MonoBehaviour
     public void OnRemoveButton()
     //----------------------------------------//
     {
+        owningLevel.OnRemoveAttribute(this);
         FindObjectOfType<NewSpecHandler>().RefreshScroll();
         GameObject.Destroy(this.gameObject);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,6 +25,8 @@ public class NewSpecHandler : MonoBehaviour
     [SerializeField] private Transform contentParent;
     [SerializeField] private AddSpecLevel specLevelPrefab;
     [SerializeField] private GameObject blankPrefab;
+    [SerializeField] private TMP_InputField threshLevelAfterField;
+    [SerializeField] private TMP_InputField threshLevelAmtField;
 
     private bool disableValUpdates = false;
     private List<AddSpecLevel> specLevelList = new List<AddSpecLevel>();
@@ -111,7 +114,10 @@ public class NewSpecHandler : MonoBehaviour
     {
         specNameField.text = specData.specName;
         starLevelDropdown.value = specData.starLevel;
-        switch(specData.numLevels)
+        threshLevelAfterField.text = specData.thresholdAfterLevel.ToString();
+        threshLevelAmtField.text = specData.thresholdNeedToReachLevel.ToString();
+
+        switch (specData.numLevels)
         {
             case 5: numLevelsDropdown.value = 0; break;
             case 10: numLevelsDropdown.value = 1; break;
@@ -192,6 +198,8 @@ public class NewSpecHandler : MonoBehaviour
         {
             specData.specName = specNameField.text;
             specData.starLevel = starLevelDropdown.value;
+            specData.thresholdAfterLevel = Int32.Parse(threshLevelAfterField.text);
+            specData.thresholdNeedToReachLevel = Int32.Parse(threshLevelAmtField.text);
         }
 
     } // END OnValueChange
@@ -205,7 +213,7 @@ public class NewSpecHandler : MonoBehaviour
         if (!disableValUpdates)
         {
             SetupFromLevelsDropdown();
-            specData.numLevels = numLevelsDropdown.value;
+            specData.numLevels = Int32.Parse(numLevelsDropdown.options[numLevelsDropdown.value].text);
         }
 
     } // END OnLevelDropdownChange

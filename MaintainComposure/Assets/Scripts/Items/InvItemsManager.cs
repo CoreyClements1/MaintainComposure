@@ -6,8 +6,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static ArtsManager;
-using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class InvItemsManager : MonoBehaviour
 {

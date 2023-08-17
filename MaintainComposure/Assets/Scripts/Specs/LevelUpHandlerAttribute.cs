@@ -24,6 +24,11 @@ public class LevelUpHandlerAttribute : MonoBehaviour
     [SerializeField] private ChosenLevelUpArt chosenLevelUpArtPrefab;
     [SerializeField] private LevelUpChooseSpec levelUpChooseSpecPrefab;
 
+    [SerializeField] private GameObject initialSetupArea;
+    [SerializeField] private TMP_Text[] skillScoreTexts = new TMP_Text[5];
+    private int[] incSkillNums = new int[5];
+    private int totalIncSkill = 40;
+
     private ArtData chosenArtData;
     private SpecializationData chosenSpecData;
     private bool executed = false;
@@ -271,6 +276,16 @@ public class LevelUpHandlerAttribute : MonoBehaviour
             case LevelUpAspect.LevelUpType.Other:
                 descriptionText.text = levelUpAspect.assocString;
                 break;
+            case LevelUpAspect.LevelUpType.InitialSetup:
+                initialSetupArea.gameObject.SetActive(true);
+                descriptionText.text = "Skill setup (allot 40 points to skills, none below 4 or above 14)";
+                incSkillNums[0] = 8;
+                incSkillNums[1] = 8;
+                incSkillNums[2] = 8;
+                incSkillNums[3] = 8;
+                incSkillNums[4] = 8;
+                RedisplaySetupScores();
+                break;
         }
 
     } // END DisplayAttribute.cs
@@ -393,6 +408,13 @@ public class LevelUpHandlerAttribute : MonoBehaviour
                 break;
             case LevelUpAspect.LevelUpType.Other:
                 break;
+            case LevelUpAspect.LevelUpType.InitialSetup:
+                SkillsManager.Instance.AddToSkill("Strength", incSkillNums[0]);
+                SkillsManager.Instance.AddToSkill("Dexterity", incSkillNums[1]);
+                SkillsManager.Instance.AddToSkill("Intelligence", incSkillNums[2]);
+                SkillsManager.Instance.AddToSkill("Senses", incSkillNums[3]);
+                SkillsManager.Instance.AddToSkill("Charisma", incSkillNums[4]);
+                break;
         }
 
     } // END ExcecuteLevelup
@@ -451,6 +473,55 @@ public class LevelUpHandlerAttribute : MonoBehaviour
         newChosenSpec.SetupSpec(chosenSpecData, this, "Change");
 
     } // END OnChooseArt
+
+
+    #endregion
+
+
+    #region INITIAL SKILL SETUP
+
+
+    // Redisplays setup scores from data
+    //----------------------------------------//
+    public void RedisplaySetupScores()
+    //----------------------------------------//
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            skillScoreTexts[i].text = incSkillNums[i].ToString();
+        }
+
+    } // END RedisplaySetupScores
+
+
+    // Attempts to increase a skill
+    //----------------------------------------//
+    public void OnInitialSetupSkillUp(int skill)
+    //----------------------------------------//
+    {
+        if (totalIncSkill < 40 && incSkillNums[skill] < 14)
+        {
+            incSkillNums[skill] += 1;
+            totalIncSkill++;
+            RedisplaySetupScores();
+        }
+
+    } // END OnInitialSetupSkillUp
+
+
+    // Attempts to decrease a skill
+    //----------------------------------------//
+    public void OnInitialSetupSkillDown(int skill)
+    //----------------------------------------//
+    {
+        if (incSkillNums[skill] > 4)
+        {
+            incSkillNums[skill] -= 1;
+            totalIncSkill--;
+            RedisplaySetupScores();
+        }
+
+    } // END OnInitialSetupSkillDown
 
 
     #endregion

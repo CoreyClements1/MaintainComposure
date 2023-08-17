@@ -115,7 +115,7 @@ public class SpecLevelAttributeDisplay : MonoBehaviour
                         c2 = "Expert ";
                         break;
                 }
-                displayString = "Learn Art: Learn any " + c2 + aspectToDisplay.assocArtType.ToString() + "Art of your choice";
+                displayString = "Learn Art: Learn any " + c2 + aspectToDisplay.assocArtType.ToString() + " Art of your choice";
                 break;
             case LevelUpAspect.LevelUpType.LearnAnyArt:
                 string c3 = "";
@@ -131,7 +131,7 @@ public class SpecLevelAttributeDisplay : MonoBehaviour
                         c3 = "Expert ";
                         break;
                 }
-                displayString = "Learn Art: Learn any " + c3 + "Art of your choice";
+                displayString = "Learn Art: Learn any " + c3 + " Art of your choice";
                 break;
             case LevelUpAspect.LevelUpType.UnlockSpec:
                 if (aspectToDisplay.assocString == "Any")
@@ -145,6 +145,9 @@ public class SpecLevelAttributeDisplay : MonoBehaviour
                 break;
             case LevelUpAspect.LevelUpType.Other:
                 displayString = aspectToDisplay.assocString;
+                break;
+            case LevelUpAspect.LevelUpType.InitialSetup:
+                displayString = "Skill Setup: Gain 40 points to distribute to skills";
                 break;
         }
 

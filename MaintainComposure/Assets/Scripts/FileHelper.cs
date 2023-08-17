@@ -25,8 +25,8 @@ public static class FileHelper
         writer.Close();
 
         // Re-load to get asset reference
-        AssetDatabase.ImportAsset(path);
-        TextAsset asset = Resources.Load(fileName) as TextAsset;
+        //AssetDatabase.ImportAsset(path);
+        //TextAsset asset = Resources.Load(fileName) as TextAsset;
 
     } // END ExportToTxt
 

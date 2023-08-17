@@ -111,9 +111,9 @@ public class GeneralAreaManager : MonoBehaviour
     public void SetupAttributesFromScratch()
     //----------------------------------------//
     {
-        maxActs = 0;
+        maxActs = 1;
         maxActsField.text = "" + maxActs;
-        currentActs = 0;
+        currentActs = 1;
         currentActsField.text = "" + currentActs;
 
         maxComposure = 0;
@@ -123,7 +123,7 @@ public class GeneralAreaManager : MonoBehaviour
         tempComposure = 0;
         tempComposureField.text = "" + tempComposure;
 
-        composureThreshold = 0;
+        composureThreshold = 10;
         thresholdText.text = "" + composureThreshold;
 
         speedBonuses = 0;
